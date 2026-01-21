@@ -1,0 +1,22 @@
+Confirmation de votre commande {{ order.reference }}
+
+Bonjour {{ order.nom }},
+
+Votre commande a été confirmée et sera livrée à l'adresse suivante :
+
+Adresse de livraison :
+{{ order.adresse_livraison }}
+{{ order.commune.nom }}
+Téléphone : {{ order.telephone }}
+
+Détails de votre commande :
+{% for item in items %}
+- {{ item.produit.name }} : {{ item.quantite }} x {{ item.prix_unitaire }} GNF = {{ item.total_ligne }} GNF
+{% endfor %}
+
+Total TTC : {{ order.montant_total }} GNF
+
+Nous vous contacterons prochainement pour organiser la livraison.
+Pour toute question, n'hésitez pas à nous contacter.
+
+© {% now "Y" %} SkyConnect. Tous droits réservés.

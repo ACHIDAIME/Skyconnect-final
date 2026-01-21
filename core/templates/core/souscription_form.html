@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block content %}
+{% if erreurs %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for err in erreurs %}
+        <li>{{ err }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+<div class="container my-5">
+  <h2>Souscription pour {{ forfait.nom }}</h2>
+  <form method="post" action="{% url 'finaliser_souscription' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Offre choisie</label>
+      <input type="text" class="form-control" value="{{ forfait.nom }} - {{ forfait.prix|floatformat:0 }} GNF/mois" disabled>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Région</label>
+      <input type="text" class="form-control" value="{{ zone.region }}" disabled>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Commune</label>
+      <input type="text" class="form-control" value="{{ commune.nom }}" disabled>
+    </div>
+    <input type="hidden" name="forfait_id" value="{{ forfait.id }}">
+    <input type="hidden" name="region_id" value="{{ zone.id }}">
+    <input type="hidden" name="commune_id" value="{{ commune.id }}">
+    <div class="mb-3">
+      <label for="nom" class="form-label">Nom complet</label>
+      <input type="text" name="nom" id="nom" class="form-control" required>
+    </div>
+    <div class="mb-3">
+  <label for="telephone" class="form-label">Téléphone</label>
+  <div class="input-group">
+    <span class="input-group-text" style="background:var(--gris-eee); color:var(--gris-888);">+224</span>
+    <input type="text" name="telephone" id="telephone" class="form-control" maxlength="9" pattern="[0-9]{9}" required >
+  </div>
+</div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" name="email" id="email" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-danger">Valider la souscription</button>
+  </form>
+  <div class="mt-4">
+    <h5>Détails de l'offre :</h5>
+    <ul>
+      {% if forfait.description1 %}<li>{{ forfait.description1 }}</li>{% endif %}
+      {% if forfait.description2 %}<li>{{ forfait.description2 }}</li>{% endif %}
+      {% if forfait.description3 %}<li>{{ forfait.description3 }}</li>{% endif %}
+      {% if forfait.description4 %}<li>{{ forfait.description4 }}</li>{% endif %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

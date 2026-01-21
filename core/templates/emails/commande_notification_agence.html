@@ -1,0 +1,51 @@
+<div style="font-family: Arial, sans-serif;">
+    <h2 style="color: #0066cc;">Nouvelle commande {{ order.reference }}</h2>
+
+    <div style="background-color: #f8f9fa; padding: 15px; margin: 15px 0; border-left: 4px solid #0066cc;">
+        <h3 style="margin-top: 0;">Informations client :</h3>
+        <p style="margin-bottom: 0;">
+            <strong>Nom :</strong> {{ order.nom }}<br>
+            <strong>Téléphone :</strong> {{ order.telephone }}<br>
+            <strong>Email :</strong> {{ order.email }}
+        </p>
+    </div>
+
+    <h3>Détails de la commande :</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="background-color: #f8f9fa;">
+            <th style="padding: 8px; text-align: left;">Produit</th>
+            <th style="padding: 8px; text-align: right;">Quantité</th>
+            <th style="padding: 8px; text-align: right;">Prix unitaire TTC</th>
+            <th style="padding: 8px; text-align: right;">Sous-total TTC</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td style="padding: 8px; border-top: 1px solid #dee2e6;">{{ item.produit.nom }}</td>
+            <td style="padding: 8px; border-top: 1px solid #dee2e6; text-align: right;">{{ item.quantite }}</td>
+            <td style="padding: 8px; border-top: 1px solid #dee2e6; text-align: right;">{{ item.prix_unitaire }} GNF</td>
+            <td style="padding: 8px; border-top: 1px solid #dee2e6; text-align: right;">{{ item.total_ligne }} GNF</td>
+        </tr>
+        {% endfor %}
+        <tr style="font-weight: bold;">
+            <td colspan="3" style="padding: 8px; text-align: right;">Total TTC :</td>
+            <td style="padding: 8px; text-align: right;">{{ order.montant_total }} GNF</td>
+        </tr>
+    </table>
+
+    <div style="background-color: #fff3cd; padding: 15px; margin: 15px 0; border-left: 4px solid #ffc107;">
+        <h3 style="color: #856404; margin-top: 0;">Important :</h3>
+        <p style="margin-bottom: 0;">
+            Cette commande est à préparer pour un retrait en agence.<br>
+            Le client dispose de 48h pour récupérer sa commande.
+        </p>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6; text-align: center;">
+        {% if logo_cid %}
+        <img src="{{ logo_cid }}" alt="SkyConnect" style="max-width: 150px;"><br>
+        {% endif %}
+        <p style="color: #6c757d; font-size: 0.8em;">
+            © {% now "Y" %} SkyConnect. Tous droits réservés.
+        </p>
+    </div>
+</div>

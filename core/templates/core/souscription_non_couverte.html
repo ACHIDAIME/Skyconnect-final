@@ -1,0 +1,48 @@
+<!-- filepath: c:\Users\mirab\Desktop\Stage\skyconnect-finalisation\core\templates\core\souscription_non_couverte.html -->
+{% extends 'core/base.html' %}
+{% block content %}
+<style>
+.card-offre-anim {
+  transition: transform 0.3s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(118,16,35,0.08);
+  will-change: transform;
+  position: relative;
+}
+.card-offre-anim:hover {
+  transform: translateY(-18px) scale(1.04) rotate(-2deg);
+  box-shadow: 0 12px 32px rgba(118,16,35,0.18), 0 2px 8px rgba(118,16,35,0.08);
+  z-index: 2;
+}
+.card-offre-anim:active {
+  transform: translateY(-8px) scale(0.98);
+  box-shadow: 0 6px 16px rgba(118,16,35,0.12);
+}
+</style>
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="text-danger">Oops 😅 cette Zone n'est pas encore couverte par la fibre optique</h2>
+    <p>Découvrez nos offres alternatives Faisceau Hertzien (FH)/ou par Antenne :</p>
+  </div>
+  <div class="row g-4 justify-content-center">
+    {% for forfait in autres_forfaits %}
+  <div class="col-md-4 d-flex align-items-stretch">
+    <div class="card border-danger shadow h-100 card-offre-anim">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <h4 class="card-title text-danger">{{ forfait.nom }}</h4>
+        <div class="mb-2 fs-5 fw-bold">{{ forfait.prix|floatformat:0 }} GNF / mois</div>
+        <ul class="list-unstyled mb-3">
+          {% if forfait.description1 %}<li>• {{ forfait.description1 }}</li>{% endif %}
+          {% if forfait.description2 %}<li>• {{ forfait.description2 }}</li>{% endif %}
+          {% if forfait.description3 %}<li>• {{ forfait.description3 }}</li>{% endif %}
+          {% if forfait.description4 %}<li>• {{ forfait.description4 }}</li>{% endif %}
+        </ul>
+        <a href="{% url 'souscription_form' forfait.id %}" class="btn btn-danger mt-auto w-100">Souscrire</a>
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <div class="col-12">
+    <div class="alert alert-warning text-center">Aucune offre FH disponible pour le moment.</div>
+  </div>
+{% endfor %}
+{% endblock %}

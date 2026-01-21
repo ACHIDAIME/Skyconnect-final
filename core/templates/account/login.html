@@ -1,0 +1,82 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Connexion - SKYCONNECT{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0" style="border-radius: 15px; background: rgba(255, 255, 255, 0.95);">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4" style="color: var(--rouge-sky); font-weight: bold;">Connexion à SKYCONNECT</h2>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="text-center">
+                        <p class="mb-4" style="color: #666; font-size: 1.05rem;">Connectez-vous avec votre compte Google</p>
+                        <div id="g_id_onload"
+                             data-client_id="494438941780-3h58rioc40afemr6hb87blskk6mn6bhi.apps.googleusercontent.com"
+                             data-context="signin"
+                             data-ux_mode="redirect"
+                             data-login_uri="http://localhost:8080/auth-receiver"
+                             data-itp_support="true">
+                        </div>
+                        <div class="g_id_signin"
+                             data-type="standard"
+                             data-shape="pill"
+                             data-theme="outline"
+                             data-text="signin_with"
+                             data-size="large"
+                             data-logo_alignment="left">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        backdrop-filter: blur(10px);
+    }
+    .g_id_signin {
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+
+<script>
+    // Animation d'entrée
+    document.addEventListener('DOMContentLoaded', function() {
+        const card = document.querySelector('.card');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+
+        // Masquer automatiquement les messages d'alerte après 5 secondes
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            }, 5000);
+        });
+    });
+</script>
+{% endblock %}
