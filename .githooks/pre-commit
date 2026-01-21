@@ -1,0 +1,29 @@
+#!/bin/bash
+# Git Hook - Synchronise les fichiers media avant chaque commit si la fixture change
+
+echo "🔄 Vérification de la fixture..."
+
+# Vérifier si la fixture a changé
+if git diff --cached --name-only | grep -q "fixtures/initial_data.json"; then
+    echo "✅ Fixture détectée - synchronisation des fichiers media..."
+    
+    # Exécuter le script PowerShell depuis bash (fonctionne sur Git Bash)
+    if command -v pwsh &> /dev/null; then
+        pwsh -NoProfile -Command "& .\sync_media_files.ps1"
+    elif command -v powershell &> /dev/null; then
+        powershell -NoProfile -Command "& .\sync_media_files.ps1"
+    else
+        echo "⚠️  PowerShell non trouvé - synchronisation manuelle nécessaire"
+        echo "   Exécute: .\sync_media_files.ps1"
+    fi
+    
+    # Ajouter les fichiers media modifiés au commit
+    if git diff --name-only | grep -q "media/"; then
+        echo "📁 Ajout des fichiers media au commit..."
+        git add media/
+    fi
+else
+    echo "ℹ️  Pas de changement à la fixture"
+fi
+
+exit 0
