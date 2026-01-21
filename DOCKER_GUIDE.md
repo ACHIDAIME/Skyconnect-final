@@ -96,6 +96,8 @@ Une **fixture** est un fichier JSON contenant **ABSOLUMENT TOUTES** les données
 ### Ajouter/Modifier des données
 Quand tu ajoutes **N'IMPORTE QUOI** en admin local (logo, produit, offre, ticket, zone de couverture, FAQ, etc.), il faut **exporter une nouvelle fixture**:
 
+⚠️ **ATTENTION:** Si tu n'exporte PAS la fixture, tes données resteront SEULEMENT sur ta machine locale! Le serveur ne verra rien!
+
 ```bash
 # Exporter les données actualisées
 docker-compose exec web python manage.py dumpdata --all --indent 2 --output=/tmp/data.json
@@ -216,30 +218,181 @@ docker-compose exec web ls -la staticfiles/
 
 ## 🚀 Déploiement sur serveur de production
 
-### Checklist avant de donner l'image
-- ✅ Tous tes produits, offres, tickets ajoutés en admin
-- ✅ Fixture exportée et pushée: `docker-compose exec web python manage.py dumpdata --all --output=/tmp/data.json`
-- ✅ `.env.example` complété avec les variables
-- ✅ Tout commité et pushé sur GitHub
+### ⚠️ Checklist PRÉ-DÉPLOIEMENT (CRITIQUE)
 
-### Pour quelqu'un qui reçoit l'image
+Avant d'aller en ligne, tu DOIS faire ceci:
+
+#### 1. Exporter la fixture complète
 ```bash
-# 1. Cloner
+docker-compose exec web python manage.py dumpdata --all --output=/tmp/final_data.json
+docker cp skyconnect_app:/tmp/final_data.json fixtures/initial_data.json
+git add fixtures/initial_data.json
+git commit -m "data: final fixture for production"
+git push
+```
+
+#### 2. Générer une clé Django sécurisée
+```bash
+docker-compose exec web python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+➜ Copie cette clé, tu en auras besoin dans le `.env` du serveur
+
+#### 3. Préparer le `.env` de production
+```bash
+# GÉNÉRER une clé SÉCURISÉE (voir étape 2)
+DJANGO_SECRET_KEY=PASTE_THE_KEY_HERE
+
+# CHANGER le mot de passe PostgreSQL
+DB_PASSWORD=UN_MOT_DE_PASSE_TRÈS_SÉCURISÉ_32_CARACTÈRES
+
+# REMPLACER par ton VRAI domaine
+ALLOWED_HOSTS=monsite.com,www.monsite.com
+
+# CONFIGURER Google OAuth
+GOOGLE_OAUTH_CLIENT_ID=TON_ID_GOOGLE
+GOOGLE_OAUTH_CLIENT_SECRET=TON_SECRET_GOOGLE
+GOOGLE_OAUTH_REDIRECT_URI=https://monsite.com/accounts/google/login/callback/
+
+# CONFIGURER Email (Gmail App Password)
+EMAIL_HOST_USER=noreply@monsite.com
+EMAIL_HOST_PASSWORD=TON_APP_PASSWORD_GMAIL
+
+# IMPORTANT: DEBUG DOIT ÊTRE FALSE!
+DEBUG=False
+```
+
+#### 4. Activer HTTPS/SSL
+Utiliser **Let's Encrypt** (gratuit):
+```bash
+# Sur le serveur, installer Certbot
+sudo apt-get install certbot python3-certbot-nginx
+
+# Générer le certificat
+sudo certbot certonly --standalone -d monsite.com -d www.monsite.com
+
+# Certs seront dans: /etc/letsencrypt/live/monsite.com/
+```
+
+Ajouter au `nginx.conf`:
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name monsite.com www.monsite.com;
+    
+    ssl_certificate /etc/letsencrypt/live/monsite.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/monsite.com/privkey.pem;
+    
+    # Reste de la config...
+}
+
+# Redirection HTTP -> HTTPS
+server {
+    listen 80;
+    server_name monsite.com www.monsite.com;
+    return 301 https://$server_name$request_uri;
+}
+```
+
+#### 5. Volumes persistants sur le serveur
+```bash
+# Créer les dossiers de données
+sudo mkdir -p /data/postgres
+sudo mkdir -p /data/media
+sudo mkdir -p /data/backups
+
+# Donner les permissions
+sudo chown 999:999 /data/postgres  # Pour PostgreSQL
+sudo chown 1000:1000 /data/media   # Pour Django
+```
+
+#### 6. Backup automatique (cron job)
+```bash
+#!/bin/bash
+# Créer /home/user/backup.sh
+
+docker-compose exec -T db pg_dump -U skyconnect skyconnect | \
+  gzip > /data/backups/db_$(date +%Y%m%d_%H%M%S).sql.gz
+
+tar -czf /data/backups/media_$(date +%Y%m%d_%H%M%S).tar.gz /data/media
+
+# Ajouter à crontab (backup tous les jours à 2h du matin):
+# crontab -e
+0 2 * * * cd /home/user/skyconnect && bash backup.sh
+```
+
+---
+
+### 📋 Étapes de déploiement sur le serveur
+
+```bash
+# 1. Sur le SERVEUR, cloner le repo
 git clone https://github.com/ACHIDAIME/Skyconnect-final.git
 cd Skyconnect-final
 
-# 2. Configurer .env
+# 2. Copier et configurer .env
 cp .env.example .env
-nano .env  # Remplir avec les vraies variables de production
+nano .env  # ⚠️ REMPLACER TOUTES les variables (voir checklist au-dessus)
 
 # 3. Déployer
 docker-compose build
 docker-compose up -d
+
+# 4. Vérifier que tout fonctionne
+docker-compose ps  # Les 3 services doivent être "Up"
+docker-compose logs web  # Vérifier pas d'erreurs
+
+# 5. Accéder au site
+https://monsite.com  ✅
 ```
 
-**C'est tout!** ✨
-- Toutes tes données (produits, offres, tickets, logos, zones, FAQ, etc.) sont chargées automatiquement
-- Les fichiers media vont dans les volumes (sauvegarde séparée si besoin)
+---
+
+### 🔒 Sécurité - À NE PAS oublier
+
+- ✅ `DEBUG=False` obligatoirement
+- ✅ `DJANGO_SECRET_KEY` nouvelle clé aléatoire
+- ✅ `DB_PASSWORD` mot de passe fort (32+ caractères)
+- ✅ `ALLOWED_HOSTS` = ton domaine exactement
+- ✅ HTTPS/SSL activé (Let's Encrypt gratuit)
+- ✅ Backups automatiques configurés
+- ✅ Ne JAMAIS mettre le `.env` en Git (il y a un `.gitignore`)
+
+---
+
+### 📊 Monitoring en production
+
+```bash
+# Voir l'utilisation des ressources
+docker stats
+
+# Voir les logs en temps réel
+docker-compose logs -f web
+
+# Backup manuel de la DB
+docker-compose exec db pg_dump -U skyconnect skyconnect > backup_manual.sql
+
+# Vérifier la santé des conteneurs
+docker-compose ps
+```
+
+---
+
+### 🆘 Troubleshooting en production
+
+```bash
+# Redémarrer l'app
+docker-compose restart web
+
+# Redémarrer tout
+docker-compose restart
+
+# Voir les erreurs détaillées
+docker-compose logs web
+docker-compose logs db
+
+# Vérifier que PostgreSQL est healthy
+docker-compose exec db pg_isready -U skyconnect
+```
 
 ---
 
