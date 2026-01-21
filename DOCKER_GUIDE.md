@@ -65,19 +65,36 @@ docker-compose exec web python manage.py createsuperuser
 ## 📦 Gestion des données (Fixtures)
 
 ### Qu'est-ce qu'une fixture?
-Une **fixture** est un fichier JSON contenant TOUTES les données de la base de données:
+Une **fixture** est un fichier JSON contenant **ABSOLUMENT TOUTES** les données de la base de données:
+
+**Contenus éditoriaux:**
 - ✅ Logos
+- ✅ Sliders
+- ✅ Actualités
+- ✅ QuickBlocks
+
+**Produits & Offres:**
 - ✅ Produits
 - ✅ Catégories & Sous-catégories
-- ✅ Offres/Forfaits
+- ✅ Forfaits/Offres
 - ✅ Tickets WiFi
-- ✅ Commandes
+
+**Configuration:**
+- ✅ **Zones de couverture**
+- ✅ **FAQ & FAQ Steps**
+- ✅ Agences
+- ✅ Messages de contact
+
+**Utilisateurs & Commandes:**
 - ✅ Utilisateurs
-- ✅ Configurations (pages, FAQ, etc.)
-- ✅ **TOUT!**
+- ✅ Commandes
+- ✅ Paniers
+- ✅ Demandes de souscription
+
+**En bref:** Tout ce que tu ajoutes via Django admin est automatiquement dans la fixture! 🎯
 
 ### Ajouter/Modifier des données
-Quand tu ajoutes un produit, une offre, un ticket, etc. en admin local, il faut **exporter une nouvelle fixture**:
+Quand tu ajoutes **N'IMPORTE QUOI** en admin local (logo, produit, offre, ticket, zone de couverture, FAQ, etc.), il faut **exporter une nouvelle fixture**:
 
 ```bash
 # Exporter les données actualisées
@@ -95,10 +112,10 @@ git push
 **Après ce push**, quand quelqu'un d'autre clone le repo et lance Docker, il aura **TOUTES** ces données!
 
 ### Workflow pour ajout de contenu
-1. Ajouter en admin local (logo, produit, offre, ticket, etc.)
+1. Ajouter du contenu en admin local (n'importe quoi: logos, produits, offres, tickets, zones, FAQ, etc.)
 2. Exporter la fixture
 3. Commit + push
-4. ✅ Le serveur aura tout à jour!
+4. ✅ Le serveur aura TOUT à jour!
 
 ## Commandes utiles
 
@@ -221,7 +238,7 @@ docker-compose up -d
 ```
 
 **C'est tout!** ✨
-- Toutes tes données (produits, offres, tickets, logos) sont chargées automatiquement
+- Toutes tes données (produits, offres, tickets, logos, zones, FAQ, etc.) sont chargées automatiquement
 - Les fichiers media vont dans les volumes (sauvegarde séparée si besoin)
 
 ---
