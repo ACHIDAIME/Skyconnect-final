@@ -1,0 +1,74 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv
+venv/
+ENV/
+env/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache
+htmlcov/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+db.sqlite3
+db.sqlite3.bak
+
+# Media & Static (générés à la compilation)
+/staticfiles
+/media
+
+# Logs
+logs/
+*.log
+
+# Docker
+docker-compose.override.yml
+Dockerfile.dev
+
+# Node (si applicable)
+node_modules/
+npm-debug.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Autres
+*.bak
+*.tmp
+.todo
