@@ -1711,14 +1711,6 @@
   }
 },
 {
-  "model": "sessions.session",
-  "pk": "60mwmyo1fj9sfpaawpea80yqnm5dg23i",
-  "fields": {
-    "session_data": ".eJxVjDkOwjAURO_iGllewPxQ0ucM1t_AAeRIcVIh7k4ipYBqpHlv5m0yLnPJS9MpD2IuxpvDb0fIT60bkAfW-2h5rPM0kN0Uu9Nm-1H0dd3dv4OCrazrEzhE4i74RCECUQRhnyCopsgdeIJjDDfGNTCqelQHkphUzuxiMp8v6Mo4VQ:1viV9o:7WwbSyfFjSyM1sH6tWIe_wAb1lG4OJz8joQTtIpdekw",
-    "expire_date": "2026-02-04T10:09:48.895Z"
-  }
-},
-{
   "model": "core.logo",
   "pk": 1,
   "fields": {
