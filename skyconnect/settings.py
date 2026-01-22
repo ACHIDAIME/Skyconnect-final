@@ -139,20 +139,5 @@ SECURE_PROXY_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
 SESSION_COOKIE_SECURE = False  # Pas HTTPS en local
 CSRF_COOKIE_SECURE = False
 
-LOGIN_REDIRECT_URL = 'accueil'
-LOGOUT_REDIRECT_URL = 'accueil'
-
-# Configuration django-allauth
-ACCOUNT_LOGIN_METHODS = {'username', 'email'}  # Connexion avec username OU email
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Champs requis pour l'inscription
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Désactivé car on utilise une vérification personnalisée
-ACCOUNT_RATE_LIMITS = {
-    'login_failed': '5/300',  # 5 tentatives en 300 secondes (5 minutes)
-}
-
-# Débogage pour éviter la boucle infinie
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'email_confirmed_redirect'  # Redirection après confirmation
-ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = 'email_confirmed_redirect'  # Redirection si pas connecté
-
-# Template pour les emails de confirmation
-ACCOUNT_EMAIL_CONFIRMATION_URL = 'accounts/confirm-email/{{key}}/?user_id={{user.id}}'
+# OAuth Google uniquement - via auth-receiver (pas de formulaires allauth)
+# Voir core/views.py pour la logique OAuth personnalisée
